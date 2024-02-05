@@ -57,4 +57,57 @@ public class CategoryTest
         Assert.True(category.CreatedAt < dateTimeAfter);
         Assert.Equal(category.IsActive, IsActive);
     }
+
+    [Theory(DisplayName = nameof(InstantiateThrowsExceptionWhenNameIsEmpty))]
+    [Trait("Domain", "Category - Aggregates")]
+    [InlineData("")]
+    [InlineData(null)]
+    [InlineData("    ")]
+    public void InstantiateThrowsExceptionWhenNameIsEmpty(string invalidName)
+    {
+        var validData = new {
+            Description = "Category Description"
+        };
+
+        Action instanciateCategory = () => new Category(invalidName, validData.Description);
+
+        var exception = Assert.Throws<EntityValidationException>(instanciateCategory);
+
+        Assert.Equal("Name should not be empty nor null", exception.Message);
+    }
+
+    [Fact(DisplayName = nameof(InstantiateThrowsExceptionWhenDescriptionIsNull))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void InstantiateThrowsExceptionWhenDescriptionIsNull()
+    {
+        var data = new {
+            Name = "Category Name",
+            InvalidDescription = (string?) null
+        };
+
+        Action instanciateCategory = () => new Category(data.Name, data.InvalidDescription!);
+
+        var exception = Assert.Throws<EntityValidationException>(instanciateCategory);
+
+        Assert.Equal("Description should not be null", exception.Message);
+    }
+
+    [Theory(DisplayName = nameof(InstantiateThrowsExceptionWhenNameIsLessThan3Characters))]
+    [Trait("Domain", "Category - Aggregates")]
+    [InlineData("1")]
+    [InlineData("12")]
+    public void InstantiateThrowsExceptionWhenNameIsLessThan3Characters(string invalidName)
+    {
+        var validData = new
+        {
+            Description = "Category Description"
+        };
+
+        Action instanciateCategory = () => 
+            new Category(invalidName, validData.Description);
+
+        var exception = Assert.Throws<EntityValidationException>(instanciateCategory);
+
+        Assert.Equal("Name should be at least 3 characters", exception.Message);
+    }
 }

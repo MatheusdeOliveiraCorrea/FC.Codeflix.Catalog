@@ -19,5 +19,19 @@ public class Category
         Description = description;
         IsActive = isActive;
         CreatedAt = DateTime.Now;
+
+        Validate();
     }   
+
+    public void Validate()
+    {
+        if(string.IsNullOrWhiteSpace(Name))
+            throw new EntityValidationException($"{nameof(Name)} should not be empty nor null");
+
+        if(Name.Length < 3)
+            throw new EntityValidationException($"{nameof(Name)} should be at least 3 characters");
+
+        if(Description is null)
+            throw new EntityValidationException($"{nameof(Description)} should not be null");
+    }
 }
