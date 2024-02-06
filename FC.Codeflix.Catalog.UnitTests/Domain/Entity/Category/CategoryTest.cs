@@ -110,4 +110,72 @@ public class CategoryTest
 
         Assert.Equal("Name should be at least 3 characters", exception.Message);
     }
+
+    [Fact(DisplayName = nameof(InstantiateThrowsExceptionWhenNameIsGreaterThan255Characters))]
+    public void InstantiateThrowsExceptionWhenNameIsGreaterThan255Characters()
+    {
+        var validData = new
+        {
+            Description = "Category Description"
+        };
+
+        var invalidName = String.Join(null, Enumerable.Range(0,256).Select(_ => "a").ToArray());
+
+        Action instanciateCategory = () => 
+            new Category(invalidName, validData.Description);
+
+        var exception = Assert.Throws<EntityValidationException>(instanciateCategory);
+
+        Assert.Equal("Name should be less or equal to 255 long", exception.Message);
+    }
+
+    [Fact(DisplayName = nameof(InstantiateThrowsExceptionWhenDescriptionIsGreaterThan10_000_Characters))]
+    public void InstantiateThrowsExceptionWhenDescriptionIsGreaterThan10_000_Characters()
+    {
+        var validData = new
+        {
+            Name = "Some name"
+        };
+
+        var invalidDescription = String.Join(null, Enumerable.Range(0,10_001).Select(_ => "a").ToArray());
+
+        Action instanciateCategory = () => 
+            new Category(validData.Name, invalidDescription);
+
+        var exception = Assert.Throws<EntityValidationException>(instanciateCategory);
+
+        Assert.Equal("Description should be less or equal to 10.000 long", exception.Message);
+    }
+
+    [Fact(DisplayName = nameof(ActivateCategory))]
+    public void ActivateCategory()
+    {
+        var validData = new 
+        {
+            Name = "category name",
+            Description = "category description"
+        };
+
+        var category = new Category(validData.Name, validData.Description, false);
+
+        category.Activate();
+
+        Assert.True(category.IsActive);
+    }
+
+    [Fact(DisplayName = nameof(DeactivateCategory))]
+    public void DeactivateCategory()
+    {
+        var validData = new 
+        {
+            Name = "category name",
+            Description = "category description"
+        };
+
+        var category = new Category(validData.Name, validData.Description, true);
+
+        category.Deactivate();
+
+        Assert.False(category.IsActive);
+    }
 }

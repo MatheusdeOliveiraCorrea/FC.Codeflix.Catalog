@@ -23,7 +23,7 @@ public class Category
         Validate();
     }   
 
-    public void Validate()
+    private void Validate()
     {
         if(string.IsNullOrWhiteSpace(Name))
             throw new EntityValidationException($"{nameof(Name)} should not be empty nor null");
@@ -31,7 +31,26 @@ public class Category
         if(Name.Length < 3)
             throw new EntityValidationException($"{nameof(Name)} should be at least 3 characters");
 
+        if(Name.Length > 255)
+            throw new EntityValidationException($"{nameof(Name)} should be less or equal to 255 long");
+
         if(Description is null)
             throw new EntityValidationException($"{nameof(Description)} should not be null");
+
+        if(Description.Length > 10_000)
+            throw new EntityValidationException($"{nameof(Description)} should be less or equal to 10.000 long");
     }
+
+    public void Activate()
+    {
+        this.IsActive = true;
+        Validate();
+    }
+
+    public void Deactivate()
+    {
+        this.IsActive = false;
+        Validate();
+    }
+
 }
