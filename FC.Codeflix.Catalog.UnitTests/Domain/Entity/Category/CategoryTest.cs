@@ -1,4 +1,6 @@
-﻿using FC.Codeflix.Catalog.Domain;
+﻿using System.ComponentModel;
+using System.Reflection.Metadata.Ecma335;
+using FC.Codeflix.Catalog.Domain;
 
 namespace FC.Codeflix.Catalog.UnitTests;
 
@@ -112,6 +114,7 @@ public class CategoryTest
     }
 
     [Fact(DisplayName = nameof(InstantiateThrowsExceptionWhenNameIsGreaterThan255Characters))]
+    [Trait("Domain", "Category - Aggregates")]
     public void InstantiateThrowsExceptionWhenNameIsGreaterThan255Characters()
     {
         var validData = new
@@ -130,6 +133,7 @@ public class CategoryTest
     }
 
     [Fact(DisplayName = nameof(InstantiateThrowsExceptionWhenDescriptionIsGreaterThan10_000_Characters))]
+    [Trait("Domain", "Category - Aggregates")]
     public void InstantiateThrowsExceptionWhenDescriptionIsGreaterThan10_000_Characters()
     {
         var validData = new
@@ -148,6 +152,7 @@ public class CategoryTest
     }
 
     [Fact(DisplayName = nameof(ActivateCategory))]
+    [Trait("Domain", "Category - Aggregates")]
     public void ActivateCategory()
     {
         var validData = new 
@@ -164,6 +169,7 @@ public class CategoryTest
     }
 
     [Fact(DisplayName = nameof(DeactivateCategory))]
+    [Trait("Domain", "Category - Aggregates")]
     public void DeactivateCategory()
     {
         var validData = new 
@@ -177,5 +183,33 @@ public class CategoryTest
         category.Deactivate();
 
         Assert.False(category.IsActive);
+    }
+
+    [Fact( DisplayName = nameof(Update))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void Update()
+    {
+        var category = new Category("Category Name", "Category Description");
+        var newValues = new { Name = "New Name", Description = "New Description" };
+
+        category.Update(newValues.Name, newValues.Description);
+
+        Assert.Equal(newValues.Name, category.Name);
+        Assert.Equal(newValues.Description, category.Description);
+    }
+
+    [Fact( DisplayName = nameof(UpdateOnlyName))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void UpdateOnlyName()
+    {
+        var category = new Category("Category Name", "Category Description");
+        var newValues = new { Name = "New Name" };
+
+        var descriptionBeforeUpdate = new string(category.Description);
+
+        category.Update(newValues.Name);
+
+        Assert.Equal(newValues.Name, category.Name);
+        Assert.Equal(descriptionBeforeUpdate, category.Description);
     }
 }
